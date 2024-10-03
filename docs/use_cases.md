@@ -239,11 +239,10 @@ stop
 
 @enduml
 ```
-**Рис. 5.2** Сценарій авторизації користувача
+**Рис. 5.2** Сценарій входу користувача
 
 </center>
 
-</center>
 ### 6. Сценарії використання для користувача
 // (USER_LOGOUT, USER_SEARCH_REQUEST, USER_ACCOUNT_DELETE, USER_MEDIA_CREATE, USER_MEDIA_DELETE, USER_MEDIA_EDIT, USER_SUPPORT)
 ### 7. Сценарії використання для технічного експерта
