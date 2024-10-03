@@ -116,6 +116,40 @@
 ### 5. Сценарії використання для незареєстрованого користувача (гостя)
 // (USER_REG, USER_LOGIN)
 ### 6. Сценарії використання для користувача
+
+
+```plantuml
+@startuml
+actor "Користувач" as User #eeeeaa
+participant "Система" as System #aaaaff
+participant "Технічний експерт" as Expert #aaffaa
+
+User -> System : Надсилає запит
+System -> User : Підтверджує отримання запиту
+System -> Expert : Передає запит технічному експерту
+Expert -> System : Підтверджує отримання запиту
+
+Expert -> Expert : Аналізує проблему
+
+alt Проблему вирішено
+    Expert -> User : Надає рішення
+else Потрібна додаткова інформація
+    Expert -> User : Запитує додаткові дані
+    User -> Expert : Надає додаткову інформацію
+    Expert -> User : Надає рішення
+end
+
+User -> System : Підтверджує, що проблема вирішена
+System -> Expert : Закриває запит
+
+opt Виключні ситуації
+    User -x Expert : Користувач не може пояснити проблему (PROBLEM_NOT_EXPLAINED_BY_USER)
+    Expert -x User : Технічний експерт недоступний (TECH_EXPERT_BUSY)
+end
+
+@enduml
+
+```
 // (USER_LOGOUT, USER_SEARCH_REQUEST, USER_ACCOUNT_DELETE, USER_MEDIA_CREATE, USER_MEDIA_DELETE, USER_MEDIA_EDIT, USER_SUPPORT)
 ### 7. Сценарії використання для технічного експерта
 // (USER_ACCOUNT_BAN)
