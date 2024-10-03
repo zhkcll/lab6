@@ -134,15 +134,14 @@
     
 ```plantuml
 @startuml
-
 |Гість|
 start
 : Користувач відкриває сторінку реєстрації;
-: Користувач вводить реєстраційні дані #ff0000
-note left #red
+:  Користувач вводить реєстраційні дані;
+note right #ff0000
 <b>Можлива виключна ситуація</b>
-<b>"INVALID_REGISTRATION_DATA"</b>
-end note;
+<b>"INVALID_REGISTRATION_DATA, USER_ALREADY_REGISTERED"</b>
+end note
 
 |Система|
 : Система перевіряє наявність користувача з наданими даними;
