@@ -142,7 +142,7 @@ start
 note left #red
 <b>Можлива виключна ситуація</b>
 <b>"INVALID_REGISTRATION_DATA"</b>
-end note
+end note;
 
 |Система|
 : Система перевіряє наявність користувача з наданими даними;
