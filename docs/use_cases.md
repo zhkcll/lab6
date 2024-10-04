@@ -10,34 +10,37 @@
     actor "Guest" as Guest
     actor "User" as User
     actor "Tech Expert" as Expert
+    actor "Media Content Analyst" as Analyst
+
 
     usecase "<b>USER_LOGIN</b>\nВхід користувача до системи" as UC_1
     usecase "<b>USER_REG</b>\nРеєстрація облікового запису\n користувача в системі" as UC_2
-    usecase "<b>USER_LOGOUT</b>\nВихід користувача з системи" as UC_3
-    usecase "<b>USER_SEARCH_REQUEST</b>\nПошук контенту" as UC_4
-    usecase "<b>USER_ACCOUNT_DELETE</b>\nВидалення облікового запису користувача" as UC_5
-    usecase "<b>USER_MEDIA_CREATE</b>\nКористувач створює новий\n медіа-контент в системі" as UC_6
-    usecase "<b>USER_MEDIA_DELETE</b>\nКористувач видаляє\n наявний медіа-контент" as UC_7
-    usecase "<b>USER_MEDIA_EDIT</b>\nКористувач редагує інформацію\n про медіа-контент" as UC_8
-    usecase "<b>USER_SUPPORT</b>\nКористувач звертається\n до технічної підтримки" as UC_9
-    usecase "<b>USER_ACCOUNT_BAN</b>\nВидалення облікового запису\n користувача технічним експертом" as UC_10
+    usecase "<b>USER_ACCOUNT_MANAGEMENT</b>\nУправління обліковим записом" as UC_3
+    usecase "<b>USER_MEDIA_MANAGEMENT</b>\nУправління медіа-контентом" as UC_4
+    usecase "<b>USER_SUPPORT</b>\nКористувач звертається\n до технічної підтримки" as UC_5
+    usecase "<b>EXPERT_USER_MANAGEMENT</b>\nУправління користувачами" as UC_6
+    usecase "<b>EXPERT_ROLE_MANAGMENT</b>\nУправління правами доступу" as UC_7
+    usecase "<b>ANALYST_ANALYSIS_MANAGMENT</b>\nУправління аналізом даних" as UC_8
+    usecase "<b>USER_SEARCH_REQUEST</b>\nПошук контенту" as UC_9
 
-    User -l-|> Guest
-    Expert -r-|> Guest
+    User -u-|> Guest
+    Expert -u-|> User
+    Analyst -u-|> User
 
-    Guest -d-> UC_1
+    Guest -u-> UC_1
     Guest -u-> UC_2
 
-    User -u-> UC_3
-    User -u-> UC_4
-    User -u-> UC_5
-    User -r-> UC_6
-    User -d-> UC_7
-    User -d-> UC_8
-    User -d-> UC_9
+    User -l-> UC_3
+    User -r-> UC_5
+    User -r-> UC_4
+    User -l-> UC_9
 
-    Expert -d-> UC_9
-    Expert -l-> UC_10
+    Expert -l-> UC_6
+    Expert -r-> UC_7
+
+    Analyst -r-> UC_8
+
+
 @enduml
 ```
 
@@ -54,9 +57,23 @@
 
     usecase "<b>USER_LOGIN</b>\nВхід користувача до системи" as UC_1
     usecase "<b>USER_REG</b>\nРеєстрація облікового запису користувача в системі" as UC_2
+    usecase "надання доступу за допомогою пошти та паролю" as UC_3
+    usecase "надання доступу за допомогою Google" as UC_4
+    usecase "надання доступу за допомогою соц. мереж" as UC_5
+    usecase "відновлення паролю" as UC_6
 
     Guest -d-> UC_1
     Guest -d-> UC_2
+
+    UC_3 .u.> UC_1 : extends
+    UC_4 .u.> UC_1 : extends
+    UC_5 .u.> UC_1 : extends
+    UC_3 .u.> UC_2 : extends
+    UC_4 .u.> UC_2 : extends
+    UC_5 .u.> UC_2 : extends
+    UC_6 .r.> UC_1 : extends
+
+
 @enduml
 ```
 <div align="center">
@@ -70,21 +87,32 @@
 
     actor "User" as User
 
+    usecase "<b>USER_ACCOUNT_MANAGEMENT</b>\nУправління обліковим записом" as UC_0.1
+    usecase "<b>USER_MEDIA_MANAGEMENT</b>\nУправління медіа-контентом" as UC_0.2
+
     usecase "<b>USER_LOGOUT</b>\nВихід користувача з системи" as UC_3
     usecase "<b>USER_SEARCH_REQUEST</b>\nПошук контенту" as UC_4
     usecase "<b>USER_ACCOUNT_DELETE</b>\nВидалення облікового запису користувача" as UC_5
-    usecase "<b>USER_MEDIA_CREATE</b>\nКористувач створює новий\n медіа-контент в системі" as UC_6
+    usecase "<b>USER_MEDIA_CREATE</b>\nКористувач створює новий\n медіа-контент в системі" as UC_8
     usecase "<b>USER_MEDIA_DELETE</b>\nКористувач видаляє наявний медіа-контент" as UC_7
-    usecase "<b>USER_MEDIA_EDIT</b>\nКористувач редагує інформацію про медіа-контент" as UC_8
+    usecase "<b>USER_MEDIA_EDIT</b>\nКористувач редагує інформацію про медіа-контент" as UC_6
     usecase "<b>USER_SUPPORT</b>\nКористувач звертається до технічної підтримки" as UC_9
+    usecase "<b>USER_ACCOUNT_EDIT</b>\nКористувач змінює дані облікового запису" as UC_10
 
-    User -u-> UC_3
-    User -u-> UC_4
-    User -u-> UC_5
-    User -r-> UC_6
-    User -d-> UC_7
-    User -d-> UC_8
-    User -d-> UC_9
+    User -r-> UC_0.1
+    User -l-> UC_0.2
+    User -u-> UC_9
+    User -d-> UC_4
+
+    UC_3 .u.> UC_0.1 : extends
+    UC_5 .l.> UC_0.1 : extends
+    UC_10 .d.> UC_0.1 : extends
+
+
+    UC_6 .u.> UC_0.2 : extends
+    UC_7 .r.> UC_0.2 : extends
+    UC_8 .d.> UC_0.2 : extends
+
 
 @enduml
 ```
@@ -100,11 +128,24 @@
 
     actor "Tech Expert" as Expert
 
-    usecase "<b>USER_SUPPORT</b>\nКористувач звертається до технічної підтримки" as UC_9
-    usecase "<b>USER_ACCOUNT_BAN</b>\nВидалення облікового запису\n користувача технічним експертом" as UC_10
+    usecase "<b>EXPERT_USER_MANAGEMENT</b>\nУправління користувачами" as UC_0.1
+    usecase "<b>EXPERT_ROLE_MANAGMENT</b>\nУправління правами доступу" as UC_0.2
+    usecase "<b>EXPERT_SUPPORT</b>\nТехнічний експерт надає відповідь\nкористувачу в тех. підтримці" as UC_9
+    usecase "<b>EXPERT_ACCOUNT_BAN</b>\nВидалення облікового запису\n користувача технічним експертом" as UC_10
+    usecase "<b>EXPERT_ROLE_DEMOTION</b>\nЗниження ролі користувачу" as UC_11
+    usecase "<b>EXPERT_ROLE_PROMOTION</b>\nПідвищення ролі користувачу" as UC_12
+    usecase "<b>EXPERT_GET_ACCESS</b>\nНадати доступу до деякого медіа-контенту користувачу" as UC_13
+    usecase "<b>EXPERT_DENY_ACCESS</b>\nЗаборонити доступ до деякого медіа-контенту користувачу" as UC_14
 
-    Expert -d-> UC_9
-    Expert -d-> UC_10
+    Expert -l-> UC_0.1
+    Expert -r-> UC_0.2
+
+    UC_9 .u.> UC_0.1 : extends
+    UC_10 .d.> UC_0.1 : extends
+    UC_11 .u.> UC_0.2 : extends
+    UC_12 .d.> UC_0.2 : extends
+    UC_13 .u.> UC_0.2 : extends
+    UC_14 .d.> UC_0.2 : extends
 @enduml
 ```
 
@@ -112,8 +153,32 @@
 Рис. 4 Схема можливостей технічного експерта
 </div>
 
+### 5. Схема використання для аналітика медіа-контенту
 
-### 5. Сценарії використання для незареєстрованого користувача (гостя)
+```plantuml
+@startuml
+
+    actor "Media Content Analyst" as Analyst
+
+    usecase "<b>ANALYST_ANALYSIS_MANAGMENT</b>\nУправління аналізом даних" as UC_0.1
+    usecase "<b>USER_ENGAGEMENT_ANALYSIS </b>\nАналіз залученості користувачів" as UC_1
+    usecase "<b>CONTENT_PERFORMANCE_COMPARISON</b>\nЗвіт по трендам та рекомендації" as UC_2
+    usecase "<b>TREND_REPORT_RECOMMENDATIONS</b>\nЗвіт по трендам та рекомендації" as UC_3
+
+    Analyst -d-> UC_0.1
+
+    UC_1 .u.> UC_0.1 : extends
+    UC_2 .u.> UC_0.1 : extends
+    UC_3 .u.> UC_0.1 : extends
+
+@enduml
+```
+
+<div align="center">
+Рис. 5 Схема можливостей аналітика медіа-контенту
+</div>
+
+### 6. Сценарії використання для незареєстрованого користувача (гостя)
 
 | **ID:**                   | USER_REG |
 |---------------------------|----------------|
@@ -153,7 +218,7 @@ stop
 
 @enduml
 ```
-**Рис. 5.1** Сценарій реєстрації користувача
+**Рис. 6.1** Сценарій USER_REG
 
 </center>
 
@@ -194,11 +259,61 @@ stop
 
 @enduml
 ```
-**Рис. 5.2** Сценарій входу користувача
+**Рис. 6.2** Сценарій USER_LOGIN
 
 </center>
 
-### 6. Сценарії використання для користувача
+| **ID:**                   | USER_PASSWD_RECOVERY |
+|---------------------------|------------------------------|
+| **НАЗВА:**                | Відновлення паролю користувача |
+| **УЧАСНИКИ:**             | Користувач, Система |
+| **ПЕРЕДУМОВИ:**           | Користувач забув пароль і має доступ до електронної пошти або іншого методу відновлення |
+| **РЕЗУЛЬТАТ:**            | Пароль успішно відновлено, і користувач отримав доступ до системи |
+| **ВИКЛЮЧНІ СИТУАЦІЇ:**    | Неправильна або неіснуюча електронна пошта (EMAIL_NOT_FOUND) |
+|                           | Відсутність доступу до електронної пошти або телефону (NO_RECOVERY_ACCESS) |
+| **ОСНОВНИЙ СЦЕНАРІЙ:**    | Користувач відкриває сторінку відновлення паролю |
+|                           | Користувач вводить свою електронну адресу або інші дані для відновлення |
+|                           | Система перевіряє введені дані та надсилає інструкції на електронну пошту користувача |
+|                           | Користувач слідує інструкціям та встановлює новий пароль |
+|                           | Система оновлює пароль і надає доступ до системи |
+
+<center>
+
+```plantuml
+@startuml
+
+|Гість|
+start
+: Користувач відкриває сторінку відновлення паролю;
+: Користувач вводить свою електронну адресу або інші дані для відновлення;
+
+|Система|
+: Система перевіряє введені дані та надсилає інструкції на електронну пошту користувача;
+note right #ff0000
+<b>Можлива виключна ситуація</b>
+<b>EMAIL_NOT_FOUND</b>
+end note
+
+|Гість|
+: Користувач слідує інструкціям та встановлює новий пароль;
+note left #ff0000
+<b>Можлива виключна ситуація</b>
+<b>NO_RECOVERY_ACCESS</b>
+end note
+
+|Система|
+: Система оновлює пароль і надає доступ до системи;
+
+|Гість|
+stop
+
+@enduml
+```
+**Рис. 6.3** Сценарій USER_PASSWD_RECOVERY
+
+</center>
+
+### 7. Сценарії використання для користувача
 
 | **ID:**                   | USER_LOGOUT |
 |---------------------------|----------------|
@@ -331,6 +446,49 @@ stop
 **Рис. 6.3** Сценарій USER_ACCOUNT_DELETE
 
 </center>
+
+| **ID:**                   | USER_ACCOUNT_EDIT |
+|---------------------------|------------------------------|
+| **НАЗВА:**                | Користувач змінює дані облікового запису |
+| **УЧАСНИКИ:**             | Користувач, Система |
+| **ПЕРЕДУМОВИ:**           | Користувач авторизований у системі |
+| **РЕЗУЛЬТАТ:**            | Дані облікового запису успішно змінені |
+| **ВИКЛЮЧНІ СИТУАЦІЇ:**    | Неправильний формат даних (INVALID_DATA_FORMAT) |
+|                           | Дані не унікальні (DATA_NOT_UNIQUE) |
+| **ОСНОВНИЙ СЦЕНАРІЙ:**    | Користувач відкриває сторінку редагування облікового запису |
+|                           | Користувач вводить нові дані, такі як ім'я, електронна адреса або пароль |
+|                           | Система перевіряє правильність введених даних та унікальність нових даних |
+|                           | Система зберігає нові дані в обліковому записі користувача |
+|                           | Користувач отримує підтвердження про успішну зміну даних |
+
+```plantuml
+@startuml
+
+|Користувач|
+start
+:Користувач відкриває сторінку редагування облікового запису;
+:Користувач вводить нові дані;
+|Система|
+:Система перевіряє правильність введених даних та унікальність нових даних;
+note right #ff0000
+<b>Можлива виключна ситуація</b>
+<b>DELETE_ACCOUNT_PERMISSION_DENIED,</b>
+<b>DATA_NOT_UNIQUE</b>
+end note
+:Система зберігає нові дані в обліковому записі користувача;
+|Користувач|
+:Користувач отримує підтвердження про успішну зміну даних;
+stop
+
+@enduml
+
+```
+<center>
+
+**Рис. 6.4** Сценарій USER_ACCOUNT_EDIT
+
+</center>
+
 
 | ID                        | USER_MEDIA_CREATE                            |
 |---------------------------|------------------------------------------------------|
@@ -507,7 +665,7 @@ stop
 
 </center>
 
-### 7. Сценарії використання для технічного експерта
+### 8. Сценарії використання для технічного експерта
 
 | **ID:**                   | USER_ACCOUNT_BAN                         |
 |---------------------------|------------------------------------------------------|
