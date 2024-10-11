@@ -3,6 +3,19 @@
 ## Модель бізнес-об'єктів 
 
 ```plantuml
+@startuml
+
+entity User #cyan
+entity User.id #lightCyan
+entity User.name #lightCyan
+entity User.email #lightCyan
+entity User.password #lightCyan
+
+User.id -r-* User
+User.name --* User
+User.email --* User
+User.password --* User
+
 entity Role #yellow
 entity Role.name #lightYellow
 entity Role.description #lightYellow
