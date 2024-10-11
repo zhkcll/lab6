@@ -3,19 +3,6 @@
 ## Модель бізнес-об'єктів 
 
 ```plantuml
-@startuml
-
-entity User #cyan
-entity User.id #lightCyan
-entity User.name #lightCyan
-entity User.email #lightCyan
-entity User.password #lightCyan
-
-User.id -r-* User
-User.name --* User
-User.email --* User
-User.password --* User
-
 entity Role #yellow
 entity Role.name #lightYellow
 entity Role.description #lightYellow
@@ -26,10 +13,12 @@ Role.description -u-* Role
 Role.id -u-* Role
 
 entity MediaContent #purple
+entity MediaContent.id #plum
 entity MediaContent.title #plum
 entity MediaContent.type #plum
 entity MediaContent.description #plum
 
+MediaContent.id -r-* MediaContent
 MediaContent.title --* MediaContent
 MediaContent.type --* MediaContent
 MediaContent.description --* MediaContent
@@ -56,10 +45,10 @@ Report.name -u-* Report
 Report.content -u-* Report
 Report.created_at -u-* Report
 
-User "1.1" -- "0.*" Role
+User "0.*" -- "1.1" Role
 User "1.1" -- "0.*" AnalysisTask
 
-MediaContent "1.*" -- "1.1" AnalysisTask
+MediaContent "1.*" -- "0.*" AnalysisTask
 AnalysisTask "1.1" -- "0.*" Report
 
 @enduml
