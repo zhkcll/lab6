@@ -21,8 +21,8 @@ entity Role.name #lightYellow
 entity Role.description #lightYellow
 entity Role.id #lightYellow
 
-Role.name -r-* Role
-Role.description -u-* Role
+Role.name --* Role
+Role.description --* Role
 Role.id -u-* Role
 
 entity MediaContent #purple
@@ -60,7 +60,7 @@ Report.created_at -u-* Report
 
 User "0.*" -- "1.1" Role
 User "1.1" -- "0.*" AnalysisTask
-
+MediaContent "0.*" -- "1.1" User
 MediaContent "1.*" -- "0.*" AnalysisTask
 AnalysisTask "1.1" -- "0.*" Report
 
