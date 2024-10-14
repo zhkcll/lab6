@@ -58,17 +58,17 @@ Report.name -u-* Report
 Report.content -u-* Report
 Report.created_at -u-* Report
 
-User "0.*" -- "1.1" Role
+User "0.*" -l- "1.1" Role
 User "1.1" -- "0.*" AnalysisTask
 MediaContent "0.*" -- "1.1" User
 AnalysisTask "1.1" -- "0.*" Report
 
 entity Project #black
-
+entity TaskContent #red
 User "1,1" -- "0,*" Project
-MediaContent "1,1" -- "0,*" Project
-AnalysisTask "1,1" -- "1,*" Project
-
+MediaContent "1,1" -- "0,*" TaskContent
+AnalysisTask "1,1" -- "0,*" TaskContent
+Project "1,1" -- "1,*" TaskContent
 
 @enduml
 ```
