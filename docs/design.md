@@ -1,6 +1,6 @@
 # Проєктування бази даних
 
-## Модель бізнес-об'єктів 
+## Модель бізнес-об'єктів
 
 ```plantuml
 @startuml
@@ -61,8 +61,14 @@ Report.created_at -u-* Report
 User "0.*" -- "1.1" Role
 User "1.1" -- "0.*" AnalysisTask
 MediaContent "0.*" -- "1.1" User
-MediaContent "1.*" -- "0.*" AnalysisTask
 AnalysisTask "1.1" -- "0.*" Report
+
+entity Project #black
+
+User "1,1" -- "0,*" Project
+MediaContent "1,1" -- "0,*" Project
+AnalysisTask "1,1" -- "1,*" Project
+
 
 @enduml
 ```
