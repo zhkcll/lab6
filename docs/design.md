@@ -23,7 +23,7 @@ entity Role.id #lightYellow
 
 Role.name --* Role
 Role.description --* Role
-Role.id -u-* Role
+Role.id --* Role
 
 entity MediaContent #purple
 entity MediaContent.id #plum
@@ -75,10 +75,11 @@ Project.description -u-* Project
 Project.createdAt -u-* Project
 
 entity TaskContent #red
-User "1,1" -- "0,*" Project
+User "1,1" -- "0,*" Project : owner
 MediaContent "1,1" -- "0,*" TaskContent
 AnalysisTask "1,1" -- "0,*" TaskContent
-AnalysisTask "0,*" - "1,1" Project
+
+AnalysisTask "0,*" -- "1,1" Project
 
 @enduml
 ```
