@@ -78,6 +78,7 @@ entity TaskContent #red
 User "1,1" -- "0,*" Project
 MediaContent "1,1" -- "0,*" TaskContent
 AnalysisTask "1,1" -- "0,*" TaskContent
+AnalysisTask "0,*" - "1,1" Project
 
 @enduml
 ```
