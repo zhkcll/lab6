@@ -1,6 +1,5 @@
 # Реалізація інформаційного та програмного забезпечення
-
-В рамках проекту розробляється: 
+ 
 ## SQL-скрипт для створення на початкового наповнення бази даних
 
 ```sql
@@ -34,7 +33,7 @@ CREATE TABLE IF NOT EXISTS db.project (
     id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(64) NOT NULL,
     description TEXT NOT NULL,
-    create_at DATETIME NOT NULL DEFAULT NOW(),
+    created_at DATETIME NOT NULL DEFAULT NOW(),
     user_id INT NOT NULL REFERENCES db.user (id) ON DELETE NO ACTION
 );
 
@@ -42,7 +41,7 @@ CREATE TABLE IF NOT EXISTS db.analysis_task (
     id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(64) NOT NULL,
     status VARCHAR(64) NOT NULL,
-    create_at DATETIME NOT NULL DEFAULT NOW(),
+    created_at DATETIME NOT NULL DEFAULT NOW(),
     user_id INT NOT NULL REFERENCES db.user (id) ON DELETE NO ACTION,
     project_id INT NOT NULL REFERENCES db.project (id) ON DELETE NO ACTION
 );
@@ -57,7 +56,7 @@ CREATE TABLE IF NOT EXISTS db.report (
     id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(64) NOT NULL,
     content TEXT NOT NULL,
-    create_at DATETIME NOT NULL DEFAULT NOW(),
+    created_at DATETIME NOT NULL DEFAULT NOW(),
     analysis_task_id INT NOT NULL REFERENCES db.analysis_task (id) ON DELETE NO ACTION
 );
 
