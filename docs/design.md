@@ -30,11 +30,13 @@ entity MediaContent.id #plum
 entity MediaContent.title #plum
 entity MediaContent.type #plum
 entity MediaContent.description #plum
+entity MediaContent.file_path #plum
 
 MediaContent.id -r-* MediaContent
 MediaContent.title --* MediaContent
 MediaContent.type --* MediaContent
 MediaContent.description --* MediaContent
+MediaContent.file_path --* MediaContent
 
 entity AnalysisTask #green
 entity AnalysisTask.id #lightGreen
