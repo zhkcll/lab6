@@ -89,4 +89,7 @@ AnalysisTask "0,*" -- "1,1" Project
 
 ## Реляційна схема
 
-![](https://github.com/rmerezha/test_db/blob/main/db.png)
+<p align="center">
+  <img src="../db.png" width="600">
+</p>
+
