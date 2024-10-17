@@ -88,4 +88,5 @@ AnalysisTask "0,*" -- "1,1" Project
 //task2
 
 ## Реляційна схема
-//task3
+
+![](https://github.com/rmerezha/test_db/blob/main/db.png)
