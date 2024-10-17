@@ -90,6 +90,6 @@ AnalysisTask "0,*" -- "1,1" Project
 ## Реляційна схема
 
 <p align="center">
-  <img src="../db.png" width="600">
+  <img src="./db.png" width="600">
 </p>
 
