@@ -87,62 +87,73 @@ AnalysisTask "0,*" -- "1,1" Project
 ```
 
 ## ER-модель
+
 ```plantuml
 @startuml
 package ProjectManagment {
     entity Project {
-        ID: UUID
-        name: TEXT
+        id: INT
+        name: VARCHAR(64)
         description: TEXT
-        createdAt: DATE
+        created_at: DATETIME
+        user_id: INT
     }
 
     entity AnalysisTask {
-        ID: UUID
-        name: TEXT
-        status: TEXT
-        createdAt: DATE
+        id: INT
+        name: VARCHAR(64)
+        status: VARCHAR(64)
+        created_at: DATETIME
+        user_id: INT
+        project_id: INT
     }
 
     entity TaskContent {
-        mediaContentID: UUID
-        analysisTaskID: UUID
+        media_content_id: INT
+        analysis_task_id: INT
     }
 
     entity MediaContent {
-        ID: UUID
-        title: TEXT
-        type: TEXT
+        id: INT
+        title: VARCHAR(128)
+        type: VARCHAR(32)
         description: TEXT
+        file_path: VARCHAR(128)
+        user_id: INT
     }
 
     entity Report {
-        ID: UUID
-        name: TEXT
+        id: INT
+        name: VARCHAR(64)
         content: TEXT
-        createdAt: DATE
+        created_at: DATETIME
+        analysis_task_id: INT
     }
 }
 
 package AccessPolicy {
-    entity Role {
-        RoleID: UUID
-        name: TEXT
+    entity Role #ffff00 {
+        id: INT
+        name: VARCHAR(64)
         description: TEXT
     }
+
+    object UserRole
+    object TechExpertRole
+    object MediaContentAnalystRole
 }
 
 package UserProfile {
     entity User {
-        ID: UUID
-        RoleID: UUID
-        NAME: TEXT
-        EMAIL: TEXT
-        PASSWORD: BYTE
+        id: INT
+        role_id: INT
+        name: VARCHAR(64)
+        email: VARCHAR(64)
+        password: VARCHAR(128)
     }
 }
 
-ProjectManagment.MediaContent "1.1" -- "1.1*" UserProfile.User
+ProjectManagment.MediaContent "0.*" -- "1.1" UserProfile.User
 ProjectManagment.MediaContent "1.1" -- "0.*" ProjectManagment.TaskContent
 AccessPolicy.Role "1.1" -- "0.*" UserProfile.User
 UserProfile.User "1.1" -- "0.*" ProjectManagment.AnalysisTask
@@ -150,6 +161,10 @@ UserProfile.User "1.1" -- "0.*" ProjectManagment.Project
 ProjectManagment.Project "1.1" -- "0.*" ProjectManagment.AnalysisTask
 ProjectManagment.AnalysisTask "1.1" -- "0.*" ProjectManagment.Report
 ProjectManagment.AnalysisTask "1.1" -- "0.*" ProjectManagment.TaskContent
+
+AccessPolicy.UserRole .d.> AccessPolicy.Role
+AccessPolicy.TechExpertRole .d.> AccessPolicy.Role
+AccessPolicy.MediaContentAnalystRole .d.> AccessPolicy.Role
 
 
 @enduml
@@ -160,4 +175,3 @@ ProjectManagment.AnalysisTask "1.1" -- "0.*" ProjectManagment.TaskContent
 <p align="center">
   <img src="./db.png" width="600">
 </p>
-
