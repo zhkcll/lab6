@@ -64,7 +64,7 @@ ProjectManagment.Project "1.1" <-- "0." ProjectManagment.AnalysisTask
 ProjectManagment.Project "1.1" <-- "0.*" ProjectManagment.MediaContent
 ProjectManagment.Project "1.1" <-- "0.*" ProjectManagment.Report
 
-UserProfile.User "1.1" <-- "0." AccessPolicy.Member
+UserProfile.User "1.1" <-- "0." AccessPolicy.Role
 
 AccessPolicy.Member "1.1" <-- "0.*" ProjectManagment.ProjectMember
 @enduml
