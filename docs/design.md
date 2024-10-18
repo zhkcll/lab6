@@ -21,6 +21,11 @@ package ProjectManagment {
         createdAt: DATE
     }
 
+    entity TaskContent {
+        mediaContentID: UUID
+        analysisTaskID: UUID
+    }
+
     entity MediaContent {
         ID: UUID
         title: TEXT
@@ -54,13 +59,16 @@ package UserProfile {
     }
 }
 
-ProjectManagment.Project "1.1" -- "0." ProjectManagment.AnalysisTask
-ProjectManagment.Project "1.1" -- "0.*" ProjectManagment.MediaContent
-ProjectManagment.Project "1.1" -- "0.*" ProjectManagment.Report
+ProjectManagment.MediaContent "1.1" -- "1.1*" UserProfile.User
+ProjectManagment.MediaContent "1.1" -- "0.*" ProjectManagment.TaskContent
+AccessPolicy.Role "1.1" -- "0.*" UserProfile.User
+UserProfile.User "1.1" -- "0.*" ProjectManagment.AnalysisTask
+UserProfile.User "1.1" -- "0.*" ProjectManagment.Project
+ProjectManagment.Project "1.1" -- "0.*" ProjectManagment.AnalysisTask
+ProjectManagment.AnalysisTask "1.1" -- "0.*" ProjectManagment.Report
+ProjectManagment.AnalysisTask "1.1" -- "0.*" ProjectManagment.TaskContent
 
-UserProfile.User "1.1" -- "0." AccessPolicy.Role
 
-AccessPolicy.Role "1.1" -- "0.*" ProjectManagment.Report
 @enduml
 ```
 
