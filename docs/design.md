@@ -66,7 +66,7 @@ ProjectManagment.Project "1.1" <-- "0.*" ProjectManagment.Report
 
 UserProfile.User "1.1" <-- "0." AccessPolicy.Role
 
-AccessPolicy.Member "1.1" <-- "0.*" ProjectManagment.ProjectMember
+AccessPolicy.Role "1.1" <-- "0.*" ProjectManagment.Role
 @enduml
 ```
 
