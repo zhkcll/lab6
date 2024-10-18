@@ -54,7 +54,6 @@ package UserProfile {
     }
 }
 
-ProjectManagment.Project "1.1" -- "0." ProjectManagment.ProjectMember
 ProjectManagment.Project "1.1" -- "0." ProjectManagment.AnalysisTask
 ProjectManagment.Project "1.1" -- "0.*" ProjectManagment.MediaContent
 ProjectManagment.Project "1.1" -- "0.*" ProjectManagment.Report
