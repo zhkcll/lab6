@@ -60,9 +60,9 @@ package UserProfile {
 }
 
 ProjectManagment.Project "1.1" <-- "0." ProjectManagment.ProjectMember
-ProjectManagment.Project "1.1" <-- "0." ProjectManagment.Task
-ProjectManagment.Project "1.1" <-- "0.*" ProjectManagment.PaymentData
-ProjectManagment.Project "1.1" <-- "0.*" ProjectManagment.Review
+ProjectManagment.Project "1.1" <-- "0." ProjectManagment.AnalysisTask
+ProjectManagment.Project "1.1" <-- "0.*" ProjectManagment.MediaContent
+ProjectManagment.Project "1.1" <-- "0.*" ProjectManagment.Report
 
 UserProfile.User "1.1" <-- "0." AccessPolicy.Member
 
