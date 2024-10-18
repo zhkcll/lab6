@@ -90,11 +90,6 @@ AnalysisTask "0,*" -- "1,1" Project
 ```plantuml
 @startuml
 package ProjectManagment {
-    entity ProjectMember {
-        ID: UUID
-        RoleID: UUID
-    }
-
     entity Project {
         ID: UUID
         name: TEXT
@@ -142,14 +137,14 @@ package UserProfile {
     }
 }
 
-ProjectManagment.Project "1.1" <-- "0." ProjectManagment.ProjectMember
-ProjectManagment.Project "1.1" <-- "0." ProjectManagment.AnalysisTask
-ProjectManagment.Project "1.1" <-- "0.*" ProjectManagment.MediaContent
-ProjectManagment.Project "1.1" <-- "0.*" ProjectManagment.Report
+ProjectManagment.Project "1.1" -- "0." ProjectManagment.ProjectMember
+ProjectManagment.Project "1.1" -- "0." ProjectManagment.AnalysisTask
+ProjectManagment.Project "1.1" -- "0.*" ProjectManagment.MediaContent
+ProjectManagment.Project "1.1" -- "0.*" ProjectManagment.Report
 
-UserProfile.User "1.1" <-- "0." AccessPolicy.Role
+UserProfile.User "1.1" -- "0." AccessPolicy.Role
 
-AccessPolicy.Role "1.1" <-- "0.*" ProjectManagment.ProjectMember
+AccessPolicy.Role "1.1" -- "0.*" ProjectManagment.Report
 @enduml
 ```
 
