@@ -1,0 +1,14 @@
+import mysql.connector
+from src.db.config import config
+
+
+def connect_to_database():
+    """
+    Функція для встановлення з'єднання з БД
+    """
+    try:
+        mydb = mysql.connector.connect(**config)
+        return mydb
+    except mysql.connector.Error as err:
+        print(f"Error connecting to MySQL: {err}")
+        return None
