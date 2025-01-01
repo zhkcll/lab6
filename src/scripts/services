@@ -1,0 +1,260 @@
+from src.db.connect import connect_to_database
+from datetime import datetime
+
+# --- Операції для таблиці Project ---
+def create_project(description, name, user_id):
+    """
+    Створення нового проекту в таблиці Project
+    """
+    mydb = connect_to_database()
+    if not mydb:
+        return False
+    cursor = mydb.cursor()
+    try:
+        now = datetime.now()
+        sql = "INSERT INTO Project (description, created_at, user_id, name) VALUES (%s, %s, %s, %s)"
+        val = (description, now, user_id, name)
+        cursor.execute(sql, val)
+        mydb.commit()
+        print(f"Проект {name} успішно створено з id {cursor.lastrowid}.")
+        return cursor.lastrowid
+    except mysql.connector.Error as err:
+        print(f"Помилка створення проекту: {err}")
+        return None
+    finally:
+        cursor.close()
+        mydb.close()
+
+# --- Операції для таблиці AnalysisTask ---
+def create_analysis_task(user_id, project_id, name, status):
+    """
+    Створення нової задачі аналізу в таблиці AnalysisTask
+    """
+    mydb = connect_to_database()
+    if not mydb:
+        return False
+    cursor = mydb.cursor()
+    try:
+        now = datetime.now()
+        sql = "INSERT INTO AnalysisTask (created_at, user_id, project_id, name, status) VALUES (%s, %s, %s, %s, %s)"
+        val = (now, user_id, project_id, name, status)
+        cursor.execute(sql, val)
+        mydb.commit()
+        print(f"Задача аналізу {name} успішно створена з id {cursor.lastrowid}.")
+        return cursor.lastrowid
+    except mysql.connector.Error as err:
+        print(f"Помилка створення задачі аналізу: {err}")
+        return None
+    finally:
+        cursor.close()
+        mydb.close()
+
+# --- Операції для таблиці MediaContent ---
+def create_media_content(description, user_id, title, type, file_path):
+    """
+    Створення нового медіаконтенту в таблиці MediaContent
+    """
+    mydb = connect_to_database()
+    if not mydb:
+        return False
+    cursor = mydb.cursor()
+    try:
+        sql = "INSERT INTO MediaContent (description, user_id, title, type, file_path) VALUES (%s, %s, %s, %s, %s)"
+        val = (description, user_id, title, type, file_path)
+        cursor.execute(sql, val)
+        mydb.commit()
+        print(f"Медіаконтент {title} успішно створено з id {cursor.lastrowid}.")
+        return cursor.lastrowid
+    except mysql.connector.Error as err:
+        print(f"Помилка створення медіаконтенту: {err}")
+        return None
+    finally:
+        cursor.close()
+        mydb.close()
+
+# --- Операції для таблиці Report ---
+def create_report(content, analysis_task_id, name):
+    """
+    Створення нового звіту в таблиці Report
+    """
+    mydb = connect_to_database()
+    if not mydb:
+        return False
+    cursor = mydb.cursor()
+    try:
+        now = datetime.now()
+        sql = "INSERT INTO Report (content, created_at, analysis_task_id, name) VALUES (%s, %s, %s, %s)"
+        val = (content, now, analysis_task_id, name)
+        cursor.execute(sql, val)
+        mydb.commit()
+        print(f"Звіт {name} успішно створено з id {cursor.lastrowid}.")
+        return cursor.lastrowid
+    except mysql.connector.Error as err:
+        print(f"Помилка створення звіту: {err}")
+        return False
+    finally:
+        cursor.close()
+        mydb.close()
+
+def read_report(report_id):
+    """
+    Зчитування звіту з таблиці Report за id
+    """
+    mydb = connect_to_database()
+    if not mydb:
+        return None
+    cursor = mydb.cursor()
+    try:
+        sql = "SELECT * FROM Report WHERE id = %s"
+        cursor.execute(sql, (report_id,))
+        result = cursor.fetchone()
+        if result:
+            print(f"Знайдено звіт: {result}")
+            return result
+        else:
+            print("Звіт не знайдено.")
+            return None
+    except mysql.connector.Error as err:
+        print(f"Помилка зчитування звіту: {err}")
+        return None
+    finally:
+        cursor.close()
+        mydb.close()
+
+def update_report(report_id, content=None, name=None):
+    """
+    Оновлення звіту за id
+    """
+    mydb = connect_to_database()
+    if not mydb:
+        return False
+    cursor = mydb.cursor()
+    try:
+        sql = "UPDATE Report SET "
+        update_fields = []
+        values = []
+
+        if content:
+            update_fields.append("content = %s")
+            values.append(content)
+        if name:
+            update_fields.append("name = %s")
+            values.append(name)
+
+        sql += ", ".join(update_fields)
+        sql += " WHERE id = %s"
+        values.append(report_id)
+        cursor.execute(sql, values)
+        mydb.commit()
+        if cursor.rowcount > 0:
+            print(f"Звіт з id {report_id} успішно оновлено.")
+            return True
+        else:
+            print(f"Звіт з id {report_id} не знайдено для оновлення.")
+            return False
+
+    except mysql.connector.Error as err:
+        print(f"Помилка оновлення звіту: {err}")
+        return False
+    finally:
+        cursor.close()
+        mydb.close()
+
+def delete_report(report_id):
+    """
+    Видалення звіту за id
+    """
+    mydb = connect_to_database()
+    if not mydb:
+        return False
+    cursor = mydb.cursor()
+    try:
+        sql = "DELETE FROM Report WHERE id = %s"
+        cursor.execute(sql, (report_id,))
+        mydb.commit()
+        if cursor.rowcount > 0:
+             print(f"Звіт з id {report_id} успішно видалено.")
+             return True
+        else:
+            print(f"Звіт з id {report_id} не знайдено для видалення.")
+            return False
+    except mysql.connector.Error as err:
+        print(f"Помилка видалення звіту: {err}")
+        return False
+    finally:
+        cursor.close()
+        mydb.close()
+
+# --- Операції для таблиці TaskContent ---
+def create_task_content(media_content_id, analysis_task_id):
+    """
+    Створення нового запису в таблиці TaskContent
+    """
+    mydb = connect_to_database()
+    if not mydb:
+        return False
+    cursor = mydb.cursor()
+    try:
+        sql = "INSERT INTO TaskContent (media_content_id, analysis_task_id) VALUES (%s, %s)"
+        val = (media_content_id, analysis_task_id)
+        cursor.execute(sql, val)
+        mydb.commit()
+        print(f"Запис в TaskContent з media_content_id {media_content_id} та analysis_task_id {analysis_task_id} успішно створено.")
+        return True
+    except mysql.connector.Error as err:
+        print(f"Помилка створення запису в TaskContent: {err}")
+        return False
+    finally:
+        cursor.close()
+        mydb.close()
+
+def read_task_content(media_content_id, analysis_task_id):
+    """
+    Зчитування запису з таблиці TaskContent за media_content_id та analysis_task_id
+    """
+    mydb = connect_to_database()
+    if not mydb:
+        return None
+    cursor = mydb.cursor()
+    try:
+        sql = "SELECT * FROM TaskContent WHERE media_content_id = %s AND analysis_task_id = %s"
+        cursor.execute(sql, (media_content_id, analysis_task_id))
+        result = cursor.fetchone()
+        if result:
+            print(f"Знайдено запис TaskContent: {result}")
+            return result
+        else:
+            print("Запис TaskContent не знайдено.")
+            return None
+    except mysql.connector.Error as err:
+        print(f"Помилка зчитування запису TaskContent: {err}")
+        return None
+    finally:
+        cursor.close()
+        mydb.close()
+
+def delete_task_content(media_content_id, analysis_task_id):
+    """
+    Видалення запису з таблиці TaskContent за media_content_id та analysis_task_id
+    """
+    mydb = connect_to_database()
+    if not mydb:
+        return False
+    cursor = mydb.cursor()
+    try:
+        sql = "DELETE FROM TaskContent WHERE media_content_id = %s AND analysis_task_id = %s"
+        cursor.execute(sql, (media_content_id, analysis_task_id))
+        mydb.commit()
+        if cursor.rowcount > 0:
+             print(f"Запис в TaskContent з media_content_id {media_content_id} та analysis_task_id {analysis_task_id} успішно видалено.")
+             return True
+        else:
+             print(f"Запис в TaskContent з media_content_id {media_content_id} та analysis_task_id {analysis_task_id} не знайдено для видалення.")
+             return False
+
+    except mysql.connector.Error as err:
+        print(f"Помилка видалення запису TaskContent: {err}")
+        return False
+    finally:
+        cursor.close()
+        mydb.close()
