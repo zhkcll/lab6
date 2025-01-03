@@ -1,11 +1,11 @@
 # Тестування працездатності системи
 
 # 1) Get
-![Get](irst.png)
+![Get](get_project.png)
 # 2)Get ID
-![Get_id](get_pr_id.png)
+![Get_id](get_project_id.png)
 # 3)put projects id
-![Put](docs/get_pr_id.png)
+![Put](docs/get_project_id.png)
 # 4)delete project id
 ![Delete](delete_project_id.png)
 # 5) put project
