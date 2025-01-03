@@ -265,6 +265,412 @@ VALUES
 
 </code></pre>
 <h2 id="restfull-сервіс-для-управління-даними"><a class="header" href="#restfull-сервіс-для-управління-даними">RESTfull сервіс для управління даними</a></h2>
+<h3 id="Підключення-до-бази-данних"><a class="header" href="#Підключення-до-бази-данних">Підключення до бази данних</a></h3>
+<pre><code>import sqlite3
+from src.Lab6.src.models.schema import SQL_SCHEMA
+
+DB_NAME = "my_database.db"
+
+def get_db_connection():
+    conn = sqlite3.connect(DB_NAME)
+    conn.row_factory = sqlite3.Row
+    return conn
+
+def create_tables():
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.executescript(SQL_SCHEMA)
+    conn.commit()
+    conn.close()
+
+</code></pre>
+<h3 id="Налаштування-сервера"><a class="header" href="#Налаштування-сервера">Налаштування сервера</a></h3>
+<pre><code>from fastapi import FastAPI
+from api import routes
+from api.middleware import ErrorHandlingMiddleware
+
+app = FastAPI()
+
+app.add_middleware(ErrorHandlingMiddleware)
+app.include_router(routes.router)
+</code></pre>
+<p>###Роутинг</p>
+<pre><code> from fastapi import APIRouter, HTTPException, status
+ from api import models
+ from src.Lab6.src.utils import database_operations as db_operations
+ from api import exceptions
+ from datetime import datetime
+ from typing import List
+
+
+ router = APIRouter()
+
+
+ def create_report_data(report: models.Report):
+     """Створює новий запис звіту."""
+     created_at = datetime.now().isoformat()
+     report_data = {
+             'content': report.content,
+             'created_at': created_at,
+             'analysis_task_id': report.analysis_task_id,
+             'name': report.name
+         }
+     return report_data
+
+
+ @router.post("/reports/", response_model=models.Report, status_code=status.HTTP_201_CREATED)
+ def create_report(report: models.Report):
+     report_data = create_report_data(report)
+     try:
+         new_report_id = db_operations.insert_report(report_data)
+         db_report = db_operations.fetch_report_by_id(new_report_id)
+         if db_report:
+              return models.Report(**db_report)
+         raise exceptions.not_found_exception(f"Report with id={new_report_id} not found")
+     except Exception as e:
+         raise exceptions.create_error_exception(str(e))
+
+
+
+ @router.get("/reports/", response_model=List[models.Report])
+ def read_all_reports():
+     try:
+       db_reports = db_operations.fetch_all_reports()
+       if db_reports:
+           return [models.Report(**db_report) for db_report in db_reports]
+       raise exceptions.not_found_exception("Reports not found")
+     except Exception as e:
+        raise exceptions.get_error_exception(str(e))
+
+
+
+ @router.get("/reports/{report_id}", response_model=models.Report)
+ def read_report(report_id: int):
+      try:
+         db_report = db_operations.fetch_report_by_id(report_id)
+         if db_report:
+               return models.Report(**db_report)
+         raise exceptions.not_found_exception(f"Report with id={report_id} not found")
+      except Exception as e:
+           raise exceptions.get_error_exception(str(e))
+
+
+
+ @router.put("/reports/{report_id}", response_model=models.Report)
+ def update_report(report_id: int, report: models.Report):
+     report_data = create_report_data(report)
+     try:
+        db_operations.update_report(report_id, report_data)
+        updated_report = db_operations.fetch_report_by_id(report_id)
+        if updated_report:
+             return models.Report(**updated_report)
+        raise exceptions.not_found_exception(f"Report with id={report_id} not found")
+     except Exception as e:
+         raise exceptions.update_error_exception(str(e))
+
+
+ @router.delete("/reports/{report_id}", response_model=dict)
+ def delete_report(report_id: int):
+     try:
+         db_operations.delete_report(report_id)
+         return {"message": "Report deleted"}
+     except Exception as e:
+         raise exceptions.delete_error_exception(str(e))
+</code></pre>
+<p>###Логіка для CRUD операцій</p>
+<pre><code>from datetime import datetime
+import sqlite3
+from src.Lab6.src.database import get_db_connection
+
+def insert_report(report_data):
+    """Вставляє новий звіт."""
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    
+    
+    cursor.execute("""
+        INSERT INTO Report (content, created_at, analysis_task_id, name)
+        VALUES (?, ?, ?, ?)
+    """, (report_data['content'], report_data['created_at'], report_data['analysis_task_id'], report_data['name']))
+
+    conn.commit()
+    new_id = cursor.lastrowid
+    conn.close()
+    return new_id
+
+
+def fetch_all_reports():
+    """Отримує всі звіти з бази даних."""
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute("SELECT * FROM Report")
+    reports = cursor.fetchall()
+    conn.close()
+    return reports
+
+
+def update_report(report_id, report_data):
+    """Оновлює звіт за його ID."""
+    conn = get_db_connection()
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        UPDATE Report
+        SET content = ?, created_at = ?, analysis_task_id = ?, name = ?
+        WHERE id = ?
+    """, (report_data['content'], report_data['created_at'], report_data['analysis_task_id'], report_data['name'], report_id))
+
+    conn.commit()
+    conn.close()
+
+
+def delete_report(report_id):
+    """Видаляє звіт за його ID."""
+    conn = get_db_connection()
+    cursor = conn.cursor()
+
+    cursor.execute("DELETE FROM Report WHERE id = ?", (report_id,))
+    conn.commit()
+    conn.close()
+
+
+def fetch_report_by_id(report_id):
+    """Отримує звіт за його ID."""
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute("SELECT * FROM Report WHERE id = ?", (report_id,))
+    report = cursor.fetchone()
+    conn.close()
+    return report
+
+def create_analysis_task(user_id, project_id, name, status):
+    """Створює нове аналітичне завдання."""
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    created_at = datetime.now().isoformat()
+    cursor.execute("""
+        INSERT INTO AnalysisTask (created_at, user_id, project_id, name, status)
+        VALUES (?, ?, ?, ?, ?)
+    """, (created_at, user_id, project_id, name, status))
+    conn.commit()
+    new_id = cursor.lastrowid
+    conn.close()
+    return new_id
+
+
+def create_media_content(user_id, title, type, file_path, description):
+    """Створює новий медіаконтент."""
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute("""
+        INSERT INTO MediaContent (user_id, title, type, file_path, description)
+        VALUES (?, ?, ?, ?, ?)
+    """, (user_id, title, type, file_path, description))
+    conn.commit()
+    new_id = cursor.lastrowid
+    conn.close()
+    return new_id
+</code></pre>
+<p>###Відправка відповіді</p>
+<pre><code>from fastapi import APIRouter, HTTPException, status, Depends
+from api import models
+from src.Lab6.src.utils import database_operations as db_operations
+from datetime import datetime
+from typing import List
+
+
+router = APIRouter()
+
+def create_report_data(report: models.Report):
+    """Створює новий запис звіту."""
+    created_at = datetime.now().isoformat()
+    report_data = {
+            'content': report.content,
+            'created_at': created_at,
+            'analysis_task_id': report.analysis_task_id,
+            'name': report.name
+        }
+    return report_data
+
+
+@router.post("/reports/", response_model=models.Report, status_code=status.HTTP_201_CREATED)
+def create_report(report: models.Report):
+    report_data = create_report_data(report)
+    new_report_id = db_operations.insert_report(report_data)
+    db_report = db_operations.fetch_report_by_id(new_report_id)
+    if db_report:
+        return models.Report(**db_report)
+    raise HTTPException(status_code=404, detail="Report not found")
+
+
+@router.get("/reports/", response_model=List[models.Report])
+def read_all_reports():
+    db_reports = db_operations.fetch_all_reports()
+    if db_reports:
+        return [models.Report(**db_report) for db_report in db_reports]
+    raise HTTPException(status_code=404, detail="Reports not found")
+
+
+@router.get("/reports/{report_id}", response_model=models.Report)
+def read_report(report_id: int):
+    db_report = db_operations.fetch_report_by_id(report_id)
+    if db_report:
+         return models.Report(**db_report)
+    raise HTTPException(status_code=404, detail="Report not found")
+
+
+@router.put("/reports/{report_id}", response_model=models.Report)
+def update_report(report_id: int, report: models.Report):
+    report_data = create_report_data(report)
+    db_operations.update_report(report_id, report_data)
+    updated_report = db_operations.fetch_report_by_id(report_id)
+    if updated_report:
+         return models.Report(**updated_report)
+    raise HTTPException(status_code=404, detail="Report not found")
+
+
+@router.delete("/reports/{report_id}", response_model=dict)
+def delete_report(report_id: int):
+    db_operations.delete_report(report_id)
+    return {"message": "Report deleted"}
+    
+
+@router.post("/task_contents/", response_model=models.TaskContent, status_code=status.HTTP_201_CREATED)
+def create_task_content(task_content: models.TaskContent):
+    task_content_data = {
+        'media_content_id': task_content.media_content_id,
+        'analysis_task_id': task_content.analysis_task_id
+    }
+    db_operations.insert_task_content(task_content_data)
+    db_task_content = db_operations.fetch_task_content_by_ids(task_content.media_content_id, task_content.analysis_task_id)
+    if db_task_content:
+        return models.TaskContent(**db_task_content)
+    raise HTTPException(status_code=404, detail="TaskContent not found")
+
+
+@router.get("/task_contents/", response_model=List[models.TaskContent])
+def read_all_task_content():
+    db_task_contents = db_operations.fetch_all_task_content()
+    if db_task_contents:
+          return [models.TaskContent(**db_task_content) for db_task_content in db_task_contents]
+    raise HTTPException(status_code=404, detail="TaskContents not found")
+
+@router.get("/task_contents/{media_content_id}/{analysis_task_id}", response_model=models.TaskContent)
+def read_task_content(media_content_id: int, analysis_task_id: int):
+    db_task_content = db_operations.fetch_task_content_by_ids(media_content_id, analysis_task_id)
+    if db_task_content:
+        return models.TaskContent(**db_task_content)
+    raise HTTPException(status_code=404, detail="TaskContent not found")
+
+
+@router.delete("/task_contents/{media_content_id}/{analysis_task_id}", response_model=dict)
+def delete_task_content(media_content_id: int, analysis_task_id: int):
+        db_operations.delete_task_content(media_content_id, analysis_task_id)
+        return {"message": "TaskContent deleted"}
+</code></pre>
+<p>###Обробка помилок</p>
+<pre><code>from fastapi import FastAPI, Request, HTTPException
+from fastapi.responses import JSONResponse
+from starlette.middleware.base import BaseHTTPMiddleware
+from typing import Callable
+from http import HTTPStatus
+
+
+class ErrorHandlingMiddleware(BaseHTTPMiddleware):
+    def __init__(self, app: FastAPI):
+        super().__init__(app)
+
+    async def dispatch(self, request: Request, call_next: Callable):
+        try:
+           response = await call_next(request)
+           return response
+        except HTTPException as http_exception:
+           response =  JSONResponse(
+                status_code=http_exception.status_code,
+                content={'error': http_exception.detail}
+            )
+           return response
+        except Exception as e:
+             response = JSONResponse(
+                status_code=HTTPStatus.INTERNAL_SERVER_ERROR,
+                content={'error': str(e)}
+            )
+             return response
+</code></pre>
+<p>###Фабрика помилок</p>
+<pre><code>from fastapi import HTTPException, status
+
+
+def missing_fields_exception():
+    """Помилка для відсутніх полів."""
+    return HTTPException(
+        status_code=status.HTTP_400_BAD_REQUEST,
+        detail="Missing fields"
+    )
+
+def not_found_exception(detail: str = "Resource not found"):
+    """Помилка для не знайденого ресурсу."""
+    return HTTPException(
+        status_code=status.HTTP_404_NOT_FOUND,
+        detail=detail
+    )
+
+
+def create_error_exception(detail: str = "Create error"):
+    """Помилка при створенні."""
+    return HTTPException(
+        status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+        detail=detail
+    )
+
+
+def get_error_exception(detail: str = "Get error"):
+    """Помилка при отриманні."""
+    return HTTPException(
+        status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+        detail=detail
+    )
+
+def update_error_exception(detail: str = "Update error"):
+    """Помилка при оновленні."""
+    return HTTPException(
+        status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+        detail=detail
+    )
+
+def delete_error_exception(detail: str = "Delete error"):
+    """Помилка при видаленні."""
+    return HTTPException(
+        status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+        detail=detail
+    )
+</code></pre>
+<p>###SQL запити</p>
+<pre><code>QUERIES = {
+    "CREATE_REPORT": """
+        INSERT INTO Report (content, created_at, analysis_task_id, name)
+        VALUES (?, ?, ?, ?)
+    """,
+    "GET_ALL_REPORTS": "SELECT * FROM Report",
+    "GET_REPORT_BY_ID": "SELECT * FROM Report WHERE id = ?",
+    "UPDATE_REPORT": """
+        UPDATE Report
+        SET content = ?, created_at = ?, analysis_task_id = ?, name = ?
+        WHERE id = ?
+    """,
+    "DELETE_REPORT": "DELETE FROM Report WHERE id = ?"
+}
+</code></pre>
+<p>###Коди статусів HTTP</p>
+<pre><code>from fastapi import status
+HTTP_STATUS_CODES = {
+  "OK": status.HTTP_200_OK,
+  "CREATED": status.HTTP_201_CREATED,
+  "BAD_REQUEST": status.HTTP_400_BAD_REQUEST,
+  "NOT_FOUND": status.HTTP_404_NOT_FOUND,
+  "INTERNAL_SERVER_ERROR": status.HTTP_500_INTERNAL_SERVER_ERROR,
+}
+</code></pre>
 
                     </main>
 
