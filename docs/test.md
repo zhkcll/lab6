@@ -1,4 +1,4 @@
 # Тестування працездатності системи
 
 1) Get
-   ![Get](docs/irst.png)
+   ![Get](irst.png)
