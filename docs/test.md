@@ -1,4 +1,4 @@
 # Тестування працездатності системи
 
-![Відповідь на GET /reports](docs/irst.png)
+(docs/irst.png)
 
