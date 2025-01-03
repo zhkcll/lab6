@@ -3,9 +3,9 @@
 # 1) Get
 ![Get](get_project.png)
 # 2)Get ID
-![Get_id](get id.png)
+![Get_id](get_project_id.png)
 # 3)put projects id
-![Put](docs/get_project_id.png)
+![Put](docs/put_project_id.png)
 # 4)delete project id
 ![Delete](delete_project_id.png)
 # 5) put project
