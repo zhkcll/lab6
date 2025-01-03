@@ -6,8 +6,13 @@
 ![Get](get_id.png)
 # 3)put projects id
 ![Get](2.png)
-4)delete project id
+# 4)delete project id
 ![Get](delete_project_id.png)
+# 5) put project
+![Get](put_project.png)
+# 6) обробка помилок
+![Get](error.png)
+
 
 
 
